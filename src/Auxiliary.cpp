@@ -17,4 +17,3 @@ std::vector<std::string> Auxiliary::parseArguments(const std::string& line) {
     }
     return arguments;
 }
-//test
