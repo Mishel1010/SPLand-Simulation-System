@@ -18,5 +18,6 @@ std::vector<std::string> Auxiliary::parseArguments(const std::string& line) {
     std::cout<<"Arguments: ";
     std::cout<<arguments[0]<<std::endl;
     std::cout<<"SPLLLLLLLLLL" ;
+    std::cout<<arguments[1]<<std::endl;
     return arguments;
 }
