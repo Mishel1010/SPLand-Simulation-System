@@ -16,5 +16,6 @@ std::vector<std::string> Auxiliary::parseArguments(const std::string& line) {
         arguments.push_back(argument);
     }
     std::cout<<"Arguments: ";
+    std::cout<<arguments[0]<<std::endl;
     return arguments;
 }
