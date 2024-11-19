@@ -15,6 +15,14 @@ std::vector<std::string> Auxiliary::parseArguments(const std::string& line) {
     while (stream >> argument) {
         arguments.push_back(argument);
     }
+<<<<<<< HEAD
     std::cout<<"test";
     return arguments;
 }
+=======
+    std::cout << "Arguments: ";
+    return arguments;
+}
+
+
+>>>>>>> 16b61483c3e603595a5cd924d75be75a0a1b3ecd
