@@ -59,7 +59,7 @@ Facility::Facility(
 
 //A constructor that recieves a facillity type        
 Facility::Facility(   
-        FacilityType &type,
+        FacilityType &type, 
         const string &settlementName)
         : FacilityType(type),
           settlementName(settlementName){}
