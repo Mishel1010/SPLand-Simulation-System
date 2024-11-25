@@ -122,7 +122,7 @@ Plan &Simulation::getPlan(const int planID) {
 }
 
 void Simulation::step() {
-    std::cout << "test" << std::endl;
+    throw std::logic_error("Not implemented yet");
 }
 
 void Simulation::close() {
@@ -132,5 +132,4 @@ void Simulation::close() {
 void Simulation::open() {
     throw std::logic_error("Not implemented yet");
 }
-//test
 
