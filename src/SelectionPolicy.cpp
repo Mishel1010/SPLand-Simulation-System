@@ -1,24 +1,20 @@
 #include "SelectionPolicy.h"
+#include <iostream>
 //naive selection class
-NaiveSelection::NaiveSelection()
-: lastSelectedIndex(-1){}
-
-NaiveSelection::NaiveSelection(int lastindex)
-: lastSelectedIndex(lastindex){}
+NaiveSelection::NaiveSelection(): lastSelectedIndex(-1) {}
 
 const FacilityType& NaiveSelection::selectFacility(const std::vector<FacilityType>& facilitiesOptions) {
     lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();
-return facilitiesOptions[lastSelectedIndex];
+    return facilitiesOptions[lastSelectedIndex];
 }
 
-const string NaiveSelection::toString() const{
+const string NaiveSelection::toString() const {
     return "naive selection";
 }
 
 NaiveSelection NaiveSelection::*clone() {
- return new NaiveSelection* = clone->this;
+    throw std::logic_error("Not implemented yet");
 }
-
 
  NaiveSelection::~NaiveSelection(){}
 
@@ -63,9 +59,8 @@ BalancedSelection::BalancedSelection(int LifeQualityScore, int EconomyScore, int
     }
 
 
-     EconomySelection EconomySelection::*clone() {
-
-
+     EconomySelection* EconomySelection::clone() const {
+        throw std::logic_error("Not implemented yet");
      }
 
 
@@ -86,7 +81,7 @@ BalancedSelection::BalancedSelection(int LifeQualityScore, int EconomyScore, int
             return "SustainabilitySelection";
         }
 
-        SustainabilitySelection SustainabilitySelection::*clone() const{
-            
+        SustainabilitySelection* SustainabilitySelection::clone() const{
+            throw std::logic_error("Not implemented yet");
         }
         SustainabilitySelection:: ~SustainabilitySelection(){}

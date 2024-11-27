@@ -6,7 +6,7 @@
 using std::vector;
 
 enum class PlanStatus {
-    AVALIABLE,
+    AVAILABLE,
     BUSY,
 };
 
