@@ -1,4 +1,8 @@
 #include "Plan.h"
+#include "Settlement.h"
+#include "SelectionPolicy.h"
+#include "Facility.h"
+#include "Simulation.h"
 #include<iostream>
 using namespace std;
 
@@ -28,17 +32,26 @@ void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy) {
 }
   
 void Plan::step(){
-    if (status == PlanStatus::AVAILABLE)
+    while (status == PlanStatus::AVAILABLE)
     {
-        
+        Facility* facil = new Facility(const_cast<FacilityType&>(selectionPolicy->SelectionPolicy::selectFacility(facilityOptions)), settlement.Settlement::getName());
+        underConstruction.push_back(facil);
+        if ((settlement.getType() == SettlementType::VILLAGE && underConstruction.size() == 1 ) ||
+            (settlement.getType() == SettlementType::CITY && underConstruction.size() == 2) || 
+            (settlement.getType() == SettlementType::METROPOLIS && underConstruction.size() == 3))
+        {
+            status = PlanStatus::BUSY;
+        }
     }
-    for (int i=0; i<underConstruction.size();)
+    int i = 0;
+    while (i < underConstruction.size()) 
     {
         Facility* ptr = underConstruction[i];
         if (ptr->step() == FacilityStatus::OPERATIONAL)
         {
-            facilities.push_back(ptr);
+            addFacility(ptr);
             underConstruction.erase(underConstruction.begin()+i);
+            status = PlanStatus::AVAILABLE;
             life_quality_score += ptr->getLifeQualityScore();
             economy_score += ptr->getEconomyScore();
             environment_score += ptr->getEnvironmentScore();
@@ -47,12 +60,6 @@ void Plan::step(){
         {
             i++;
         }
-    }
-    if ((settlement.getType() == SettlementType::VILLAGE && underConstruction.size() == 1 ) ||
-        (settlement.getType() == SettlementType::CITY && underConstruction.size() == 2) || 
-        (settlement.getType() == SettlementType::METROPOLIS && underConstruction.size() == 3))
-    {
-        status = PlanStatus::BUSY;
     }
 }
 void Plan::printStatus() {
@@ -91,4 +98,17 @@ const string Plan::toString() const {
 
 const int Plan::getPlanId() const {
     return plan_id;
+}
+
+Plan::~Plan() {
+    for (Facility* facil : facilities)
+    {
+        delete facil;
+    }
+    facilities.clear();
+    for (Facility* facil : underConstruction)
+    {
+        delete facil;
+    }
+    underConstruction.clear();
 }

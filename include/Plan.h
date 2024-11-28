@@ -23,6 +23,7 @@ class Plan {
         void addFacility(Facility* facility);
         const string toString() const;
         const int getPlanId() const;
+        virtual ~Plan();
 
     private:
         int plan_id;

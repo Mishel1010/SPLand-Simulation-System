@@ -80,8 +80,10 @@ const int Facility::getTimeLeft() const
         
 FacilityStatus Facility::step()
 {
-    if (timeLeft==1){
-        status = FacilityStatus::OPERATIONAL;}
+    if (timeLeft==1)
+    {
+        status = FacilityStatus::OPERATIONAL;
+    }
     timeLeft--;
 }
 

@@ -12,17 +12,16 @@ const string NaiveSelection::toString() const {
     return "naive selection";
 }
 
-NaiveSelection NaiveSelection::*clone() {
-    throw std::logic_error("Not implemented yet");
+NaiveSelection* NaiveSelection::clone() const {
+    NaiveSelection* clone = new NaiveSelection();
+    clone->lastSelectedIndex = this->lastSelectedIndex;
 }
-
- NaiveSelection::~NaiveSelection(){}
 
 //balanced selction class
 BalancedSelection::BalancedSelection(int LifeQualityScore, int EconomyScore, int EnvironmentScore)
 : LifeQualityScore(LifeQualityScore), EconomyScore (EconomyScore), EnvironmentScore(EnvironmentScore){}
 
- const FacilityType& BalancedSelection::selectFacility(const std::vector<FacilityType>& facilitiesOptions){
+const FacilityType& BalancedSelection::selectFacility(const std::vector<FacilityType>& facilitiesOptions){
     const FacilityType*  ptr = &facilitiesOptions[0];
     int a = ptr->getEconomyScore()+EconomyScore;
     int b = ptr->getLifeQualityScore()+LifeQualityScore;
@@ -43,45 +42,51 @@ BalancedSelection::BalancedSelection(int LifeQualityScore, int EconomyScore, int
 
     }
 
-    EconomySelection::EconomySelection()
-    :lastSelectedIndex(-1){}
+const string BalancedSelection::toString() const {
+    return "Balanced selection";
+}
 
-    const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
-        lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();
-        while (facilitiesOptions[lastSelectedIndex].getCategory() != FacilityCategory::ECONOMY){
-          lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();  
-        }
-        return facilitiesOptions[lastSelectedIndex];
-        }
+BalancedSelection* BalancedSelection::clone() const {
+    BalancedSelection* clone = new BalancedSelection(LifeQualityScore, EconomyScore, EnvironmentScore);
+}
 
-    const string EconomySelection::toString() const{
-        return "Economy selection";
+EconomySelection::EconomySelection() :lastSelectedIndex(-1){}
+
+const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
+    lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();
+    while (facilitiesOptions[lastSelectedIndex].getCategory() != FacilityCategory::ECONOMY)
+    {
+      lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();  
     }
+    return facilitiesOptions[lastSelectedIndex];
+}
+
+const string EconomySelection::toString() const {
+    return "Economy selection";
+}
 
 
-     EconomySelection* EconomySelection::clone() const {
-        throw std::logic_error("Not implemented yet");
-     }
+EconomySelection* EconomySelection::clone() const {
+    EconomySelection* clone = new EconomySelection();
+    clone->lastSelectedIndex = this->lastSelectedIndex;
+}
 
+SustainabilitySelection::SustainabilitySelection(): lastSelectedIndex(-1){}
 
-     EconomySelection::~EconomySelection(){}
+const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
+    lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();
+    while (facilitiesOptions[lastSelectedIndex].getCategory() != FacilityCategory::ENVIRONMENT)
+    {
+        lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();  
+    }
+    return facilitiesOptions[lastSelectedIndex];
+}
 
-    SustainabilitySelection::SustainabilitySelection()
-    : lastSelectedIndex(-1){}
+const string SustainabilitySelection::toString() const {
+    return "SustainabilitySelection";
+}
 
-    const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
-        lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();
-        while (facilitiesOptions[lastSelectedIndex].getCategory() != FacilityCategory::ENVIRONMENT){
-          lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();  
-        }
-        return facilitiesOptions[lastSelectedIndex];
-        }
-
-        const string SustainabilitySelection::toString() const{
-            return "SustainabilitySelection";
-        }
-
-        SustainabilitySelection* SustainabilitySelection::clone() const{
-            throw std::logic_error("Not implemented yet");
-        }
-        SustainabilitySelection:: ~SustainabilitySelection(){}
+SustainabilitySelection* SustainabilitySelection::clone() const {
+    SustainabilitySelection* clone = new SustainabilitySelection();
+    clone->lastSelectedIndex = this->lastSelectedIndex;
+}
