@@ -71,7 +71,11 @@ void Simulation::start() {
 }
 
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy) {
-    throw std::logic_error("Not implemented yet");
+    const int currentPlanId = planCounter;
+    planCounter++;
+    const vector<FacilityType> facilityOptions = facilitiesOptions;
+    Plan toAdd(currentPlanId,settlement, selectionPolicy,facilityOptions);
+    plans.push_back(toAdd);
 }
 
 void Simulation::addAction(BaseAction *action) {
