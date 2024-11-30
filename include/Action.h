@@ -95,7 +95,7 @@ class ChangePlanPolicy : public BaseAction {
     public:
         ChangePlanPolicy(const int planId, const string &newPolicy);
         void act(Simulation &simulation) override;
-        ChangePlanPolicy *clone() const override;
+        ChangePlanPolicy *clone() const override;        
         const string toString() const override;
     private:
         const int planId;

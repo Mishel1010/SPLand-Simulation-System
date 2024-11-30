@@ -217,3 +217,54 @@ void PrintPlanStatus::act(Simulation& simulation) {
     }
     complete();
 }
+
+PrintPlanStatus* PrintPlanStatus::clone() const {
+    return new PrintPlanStatus(planId);
+}
+
+const string PrintPlanStatus::toString() const {
+    return "Printing plan status for plan number " + to_string(planId);
+}
+
+//----------------------------------------------------------------
+//ChangePlanPolicy Class
+//----------------------------------------------------------------
+
+ChangePlanPolicy::ChangePlanPolicy(const int planId, const string& newPolicy) : BaseAction(), planId(planId), newPolicy(newPolicy) {}
+
+void ChangePlanPolicy::act(Simulation& simulation) {
+    if (!(simulation.Simulation::isPlanExists(planId)) || !(simulation.Simulation::getPlan(planId).Plan::getSelectionPolicyName()==newPolicy))
+    {
+        BaseAction::error("Cannot change selection policy");
+        cout << "Error: " + BaseAction::getErrorMsg() << endl;
+        return;
+    }
+    Plan &plan = simulation.Simulation::getPlan(planId);
+    SelectionPolicy* newPolicyObj;
+    if (newPolicy == "nve")
+    {
+        newPolicyObj = new NaiveSelection();
+    }
+    else if (newPolicy == "eco")
+    {
+        newPolicyObj = new EconomySelection();
+    }
+    else if (newPolicy == "env")
+    {
+        newPolicyObj = new SustainabilitySelection();
+    }
+    plan.Plan::setSelectionPolicy(newPolicyObj);
+    complete();
+}
+
+ChangePlanPolicy* ChangePlanPolicy::clone() const {
+    return new ChangePlanPolicy(planId, newPolicy);
+}
+
+const string ChangePlanPolicy::toString() const { 
+    return "Changing selection policy for plan number " + to_string(planId) + " to " + newPolicy;
+}
+
+//----------------------------------------------------------------
+//PrintActionsLog Class
+//----------------------------------------------------------------
