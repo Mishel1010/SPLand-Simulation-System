@@ -19,7 +19,11 @@ class Plan {
         void setSelectionPolicy(SelectionPolicy *selectionPolicy);
         void step();
         void printStatus();
+        const string getStatus() const;
         const vector<Facility*> &getFacilities() const;
+        const vector<Facility*> &getUnderConstructionFacilities() const;
+        const string getSettlementName() const;
+        const string getSelectionPolicyName() const;
         void addFacility(Facility* facility);
         const string toString() const;
         const int getPlanId() const;
@@ -27,7 +31,7 @@ class Plan {
 
     private:
         int plan_id;
-        Settlement &settlement;
+        const Settlement &settlement;
         SelectionPolicy *selectionPolicy; //What happens if we change this to a reference?
         PlanStatus status;
         vector<Facility*> facilities;

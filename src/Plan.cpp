@@ -73,8 +73,31 @@ void Plan::printStatus() {
     }
 }
 
+const string Plan::getStatus() const {
+    if (status == PlanStatus::AVAILABLE)
+    {
+        return "Available";
+    }
+    else if (status == PlanStatus::BUSY)
+    {
+        return "Busy";
+    }
+}
+
 const vector<Facility*>& Plan::getFacilities() const {
     return facilities;
+}
+
+const vector<Facility*>& Plan::getUnderConstructionFacilities() const {
+    return underConstruction;
+}
+
+const string Plan::getSettlementName() const {
+    return settlement.getName();
+}
+
+const string Plan::getSelectionPolicyName() const {
+    return selectionPolicy->toString();
 }
 
 void Plan::addFacility(Facility* facility) {

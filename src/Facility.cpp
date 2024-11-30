@@ -2,6 +2,9 @@
 #include <string>
 #include <iostream>
 
+//--------------------------------------------------------------
+//FacilityType class
+//--------------------------------------------------------------
 FacilityType::FacilityType(
     const string &name,
     const FacilityCategory category,
@@ -46,6 +49,9 @@ FacilityCategory FacilityType::getCategory() const
     return category;
 }
 
+//--------------------------------------------------------------
+//Facility class
+//--------------------------------------------------------------
 Facility::Facility(
     const string &name,
     const string &settlementName,
@@ -60,13 +66,11 @@ Facility::Facility(
       timeLeft(price){}
 
        
-Facility::Facility(   
-        FacilityType &type, 
-        const string &settlementName)
-        : FacilityType(type),
-          settlementName(settlementName),
-          status(FacilityStatus::UNDER_CONSTRUCTIONS),
-          timeLeft(type.getCost()) {}
+Facility::Facility (const FacilityType &type, const string &settlementName):
+    FacilityType(type),
+    settlementName(settlementName),
+    status(FacilityStatus::UNDER_CONSTRUCTIONS),
+    timeLeft(type.getCost()) {}
 
 const string &Facility::getSettlementName() const
 {

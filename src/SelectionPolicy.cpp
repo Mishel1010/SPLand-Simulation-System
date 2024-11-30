@@ -15,6 +15,7 @@ const string NaiveSelection::toString() const {
 NaiveSelection* NaiveSelection::clone() const {
     NaiveSelection* clone = new NaiveSelection();
     clone->lastSelectedIndex = this->lastSelectedIndex;
+    return clone;
 }
 
 //balanced selction class
@@ -47,7 +48,7 @@ const string BalancedSelection::toString() const {
 }
 
 BalancedSelection* BalancedSelection::clone() const {
-    BalancedSelection* clone = new BalancedSelection(LifeQualityScore, EconomyScore, EnvironmentScore);
+    return new BalancedSelection(LifeQualityScore, EconomyScore, EnvironmentScore);
 }
 
 EconomySelection::EconomySelection() :lastSelectedIndex(-1){}
@@ -69,6 +70,7 @@ const string EconomySelection::toString() const {
 EconomySelection* EconomySelection::clone() const {
     EconomySelection* clone = new EconomySelection();
     clone->lastSelectedIndex = this->lastSelectedIndex;
+    return clone;
 }
 
 SustainabilitySelection::SustainabilitySelection(): lastSelectedIndex(-1){}
@@ -89,4 +91,5 @@ const string SustainabilitySelection::toString() const {
 SustainabilitySelection* SustainabilitySelection::clone() const {
     SustainabilitySelection* clone = new SustainabilitySelection();
     clone->lastSelectedIndex = this->lastSelectedIndex;
+    return clone;
 }
