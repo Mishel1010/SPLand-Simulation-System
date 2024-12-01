@@ -1,6 +1,14 @@
 #include "Action.h" 
-using namespace std;
+#include "Auxiliary.h"
+#include "Plan.h"
+#include "Settlement.h"
+#include "SelectionPolicy.h"
+#include "Facility.h"
+#include "Simulation.h"
 #include <iostream>
+using namespace std;
+
+Simulation* backup = nullptr;
 
 //----------------------------------------------------------------
 //BaseAction Class
@@ -272,7 +280,8 @@ const string ChangePlanPolicy::toString() const {
 PrintActionsLog::PrintActionsLog(): BaseAction() {}
 
 void PrintActionsLog::act(Simulation& simulation) {
-    for (int i = 0 ; i < simulation.Simulation::getActionsLog().size(); i++) 
+    int size = simulation.Simulation::getActionsLog().size();
+    for (int i = 0 ; i < size ; i++) 
     {
         string status;
         if (simulation.Simulation::getActionsLog()[i]->getStatus() == ActionStatus::COMPLETED)

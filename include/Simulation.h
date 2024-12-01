@@ -10,11 +10,13 @@ using std::vector;
 class BaseAction;
 class SelectionPolicy;
 
-extern Simulation* backup;
-
 class Simulation {
     public:
         Simulation(const string &configFilePath);
+        Simulation(Simulation&& other);
+        Simulation(Simulation& other);
+        Simulation& operator=(Simulation&& other);
+        Simulation& operator=(Simulation& other);
         void start();
         void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy);
         void addAction(BaseAction *action);

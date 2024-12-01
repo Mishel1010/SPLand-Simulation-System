@@ -1,4 +1,16 @@
 #include "Auxiliary.h"
+#include <iostream>
+#include "Action.h" 
+#include "Plan.h"
+#include "Settlement.h"
+#include "SelectionPolicy.h"
+#include "Facility.h"
+#include "Simulation.h"
+
+class Auxiliary {
+public:
+    static std::vector<std::string> parseArguments(const std::string& line);
+};
 /*
 This is a 'static' method that receives a string(line) and returns a vector of the string's arguments.
 

@@ -1,36 +1,24 @@
-# Compiler and compiler flags
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++11
-
-# Project structure
+CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic -I./include
 SRCDIR = src
-BUILDDIR = build
-TARGET = $(BUILDDIR)/app
+OBJDIR = obj
+BINDIR = bin
 
-# Source and object files
 SOURCES = $(wildcard $(SRCDIR)/*.cpp)
-OBJECTS = $(patsubst $(SRCDIR)/%.cpp, $(BUILDDIR)/%.o, $(SOURCES))
+OBJECTS = $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
+EXECUTABLE = $(BINDIR)/SPLand_simulation
 
-# Default rule to build the application
-all: $(TARGET)
+all: $(EXECUTABLE)
 
-# Rule to link the executable
-$(TARGET): $(OBJECTS)
-	@mkdir -p $(BUILDDIR)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+$(EXECUTABLE): $(OBJECTS)
+	@mkdir -p $(BINDIR)
+	$(CXX) $(OBJECTS) -o $@
 
-# Rule to compile object files
-$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
-	@mkdir -p $(BUILDDIR)
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	@mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean rule to remove generated files
 clean:
-	rm -rf $(BUILDDIR)
+	rm -rf $(OBJDIR) $(BINDIR)
 
-# Run the application
-run: all
-	./$(TARGET)
-
-# Phony targets
-.PHONY: all clean run
+.PHONY: all clean

@@ -47,6 +47,8 @@ class Facility: public FacilityType {
         FacilityStatus step();
         void setStatus(FacilityStatus status);
         const FacilityStatus& getStatus() const;
+        Facility* clone() const;
+        void setTimeLeft(int time);
         const string toString() const;
 
     private:

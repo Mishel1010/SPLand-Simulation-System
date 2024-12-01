@@ -1,3 +1,5 @@
+#include "Action.h" 
+#include "Auxiliary.h"
 #include "Plan.h"
 #include "Settlement.h"
 #include "SelectionPolicy.h"
@@ -15,6 +17,37 @@ Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *sele
     underConstruction(vector<Facility*>()),
     facilityOptions(facilityOptions),
     life_quality_score(0), economy_score(0), environment_score(0){}
+
+Plan::Plan(Plan& other)
+  : plan_id(other.getPlanId()),
+    settlement(other.settlement),
+    life_quality_score(other.getlifeQualityScore()),
+    environment_score(other.getEnvironmentScore()),
+    economy_score(other.getEconomyScore()),
+    selectionPolicy(other.selectionPolicy->clone()),
+    status(other.status),
+    facilityOptions(other.facilityOptions) {
+        for(Facility* ptr : other.facilities)
+        {
+            facilities.push_back(ptr->clone());
+        }
+        for(Facility* ptr : other.underConstruction)
+        {
+            underConstruction.push_back(ptr->clone());
+        } 
+}
+
+Plan::Plan(Plan&& other)
+    : plan_id(other.plan_id),
+      settlement(std::move(other.settlement)),
+      selectionPolicy(std::move(other.selectionPolicy)),
+      status(other.status),
+      facilities(std::move(other.facilities)),
+      underConstruction(std::move(other.underConstruction)),
+      facilityOptions(std::move(other.facilityOptions)),
+      life_quality_score(other.life_quality_score),
+      economy_score(other.economy_score),
+      environment_score(other.environment_score){}
 
 const int Plan::getlifeQualityScore() const {
     return life_quality_score;

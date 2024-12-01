@@ -1,4 +1,10 @@
+#include "Action.h" 
+#include "Auxiliary.h"
+#include "Plan.h"
 #include "Settlement.h"
+#include "SelectionPolicy.h"
+#include "Facility.h"
+#include "Simulation.h"
 
 Settlement::Settlement(const string &name, SettlementType type): name(name), type(type) {}
 

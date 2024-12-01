@@ -1,11 +1,16 @@
+#include "Action.h" 
+#include "Auxiliary.h"
+#include "Plan.h"
+#include "Settlement.h"
+#include "SelectionPolicy.h"
+#include "Facility.h"
 #include "Simulation.h"
-#include <fstream>
 #include <iostream>
-#include <Auxiliary.h>
+#include <fstream>
+#include <sstream>
+#include <vector>
 
 using namespace std; 
-
-Simulation* backup = nullptr;
 
 Simulation::Simulation(const string &configFilePath) : isRunning(true), planCounter(0) {
     std::ifstream configFile(configFilePath);
@@ -93,6 +98,73 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
         }
     }
 }
+
+Simulation::Simulation(Simulation&& other)
+:   isRunning(other.isRunning),
+    planCounter(other.planCounter),
+    actionsLog(std::move(other.actionsLog)),
+    plans(std::move(other.plans)),
+    settlements(std::move(other.settlements)),
+    facilitiesOptions(std::move(other.facilitiesOptions)) {}
+
+Simulation::Simulation(Simulation& other)
+:   plans(other.plans),
+    facilitiesOptions(other.facilitiesOptions),
+    isRunning(other.isRunning),
+    planCounter(other.planCounter) {
+        for (BaseAction* ptr : other.actionsLog)
+        {
+            this->actionsLog.push_back(ptr->clone());
+        }
+        for(Settlement* q: other.settlements)
+        {
+            this->settlements.push_back (new Settlement(q->getName(), q->getType()));
+        }
+}
+
+Simulation& Simulation::operator=(Simulation&& other) {
+    if (this != &other)
+    {
+        for (BaseAction* ptr : actionsLog)
+        {
+            delete ptr;
+        }
+        for (Settlement* ptr : settlements)
+        {
+            delete ptr;
+        }
+        actionsLog = std::move(other.actionsLog);
+        plans = std::move(other.plans);
+        settlements = std::move(other.settlements);
+        facilitiesOptions = std::move(other.facilitiesOptions);
+        isRunning = other.isRunning;
+        planCounter = other.planCounter;
+    }
+    return *this;
+}
+
+   Simulation& Simulation::operator=(Simulation& other){
+    if(this != &other){
+    plans = other.plans;
+    facilitiesOptions = other.facilitiesOptions;
+    isRunning = other.isRunning;
+    planCounter = other.planCounter;
+    for (BaseAction* ptr : actionsLog){
+        delete ptr;
+    }
+    for (BaseAction* ptr: other.actionsLog){
+        actionsLog.push_back(ptr->clone());
+    }
+    for(Settlement* ptr : settlements){
+        delete ptr;
+    }
+
+    for(Settlement* ptr : other.settlements){
+        settlements.push_back(new Settlement(ptr->getName(), ptr->getType() ));
+    }}
+    return *this;
+    
+   }
 
 void Simulation::start() {
     std::cout << "The simulation has started" << std::endl;
@@ -198,20 +270,23 @@ void Simulation::step() {
 }
 
 void Simulation::close() {
-    // for(int i=0; i<plans.size();i++)
-    // {
-    //     cout << "plan ID: " + std::to_string(plans[i].getPlanId()) << endl; 
-    //     cout << "settlementName " + plans[i].getSettlementName() << endl;
-    //     cout << "LifeQuality_score " + std::to_string(plans[i].getlifeQualityScore()) << endl;
-    //     cout << "Economy_Score " + std::to_string(plans[i].getEconomyScore()) << endl;
-    //     cout << "Environment score" + std::to_string(plans[i].getEnvironmentScore()) << endl;
-    //     delete(plans[i]);
-    //     plans.clear();
-    // }
-    // for (int i = 0; i< actionsLog.size(); i++)
-    // {
-    //     delete (actionsLog[i]);
-    // }
+    for(int i=0; i<plans.size();i++)
+    {
+        cout << "plan ID: " + std::to_string(plans[i].getPlanId()) << endl; 
+        cout << "settlementName " + plans[i].getSettlementName() << endl;
+        cout << "LifeQuality_score " + std::to_string(plans[i].getlifeQualityScore()) << endl;
+        cout << "Economy_Score " + std::to_string(plans[i].getEconomyScore()) << endl;
+        cout << "Environment score" + std::to_string(plans[i].getEnvironmentScore()) << endl;
+    }
+    for (BaseAction* action : actionsLog)
+    {
+        delete action;
+    }
+    for (Settlement* settlement : settlements)
+    {
+        delete settlement;
+    }
+    isRunning = false;
 }
 
 void Simulation::open() {

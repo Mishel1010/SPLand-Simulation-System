@@ -1,4 +1,10 @@
+#include "Action.h" 
+#include "Auxiliary.h"
+#include "Plan.h"
+#include "Settlement.h"
+#include "SelectionPolicy.h"
 #include "Facility.h"
+#include "Simulation.h"
 #include <string>
 #include <iostream>
 
@@ -79,7 +85,8 @@ const string &Facility::getSettlementName() const
      
 const int Facility::getTimeLeft() const
 {
-    return timeLeft;
+    const int retTimeLeft = this->timeLeft;
+    return retTimeLeft;
 }
         
 FacilityStatus Facility::step()
@@ -100,6 +107,22 @@ void Facility::setStatus(FacilityStatus status)
 const FacilityStatus& Facility::getStatus() const
 {
     return status;
+}
+
+Facility* Facility::clone() const {
+    Facility* a = new Facility(this->getName(), 
+    this->getSettlementName(),
+    this->getCategory(),
+    this->getCost(),
+    this->getLifeQualityScore(),
+    this->getEconomyScore(),
+    this->getEnvironmentScore());
+    a->setTimeLeft(this->timeLeft);
+    return a;
+}
+
+void Facility::setTimeLeft(int time) {
+    timeLeft = time;
 }
         
 const string Facility::toString() const
