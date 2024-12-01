@@ -42,7 +42,7 @@ void SimulateStep::act(Simulation& simulation) {
 }
 
 const string SimulateStep::toString() const {
-    return "Simulating " + to_string(numOfSteps) + " steps";
+    return "step " + to_string(numOfSteps);
 }
 
 SimulateStep* SimulateStep::clone() const {
@@ -92,7 +92,7 @@ void AddPlan::act(Simulation& simulation) {
 }
 
 const string AddPlan::toString() const {
-    return "Adding plan for settlement: " + settlementName + ", selection policy: " + selectionPolicy;
+    return "plan " + settlementName + " " + selectionPolicy;
 }
 
 AddPlan* AddPlan::clone() const {
@@ -124,17 +124,17 @@ const string AddSettlement::toString() const {
     string type;
     if (settlementType == SettlementType::VILLAGE)
     {
-        type = "Village";
+        type = "0";
     }
     else if (settlementType == SettlementType::CITY)
     {
-        type = "City";
+        type = "1";
     }
     else if (settlementType == SettlementType::METROPOLIS)
     {
-        type = "Metropolis";
+        type = "2";
     }
-    return "Adding settlement: " + settlementName + ", type: " + type;
+    return "settlement " + settlementName + " " + type;
 }
 
 //----------------------------------------------------------------
@@ -166,20 +166,20 @@ AddFacility* AddFacility::clone() const {
 }
 
 const string AddFacility::toString() const {
-    string str;
+    string cat;
     if (facilityCategory == FacilityCategory::LIFE_QUALITY)
     {
-        str = "Life Quality";
+        cat = "0";
     }
     else if (facilityCategory == FacilityCategory::ECONOMY)
     {
-        str = "Economy";
+        cat = "1";
     }
     else if (facilityCategory == FacilityCategory::ENVIRONMENT)
     {
-        str = "Environment";
+        cat = "2";
     }
-    return "Adding facility: " + facilityName + ", category: " + str;
+    return "facility " + facilityName + " " + cat + " " + to_string(price) + " " + to_string(lifeQualityScore) + " " + to_string(economyScore) + " " + to_string(environmentScore);
 }
 
 //----------------------------------------------------------------
@@ -223,7 +223,7 @@ PrintPlanStatus* PrintPlanStatus::clone() const {
 }
 
 const string PrintPlanStatus::toString() const {
-    return "Printing plan status for plan number " + to_string(planId);
+    return "planStatus " + to_string(planId);
 }
 
 //----------------------------------------------------------------
@@ -262,9 +262,112 @@ ChangePlanPolicy* ChangePlanPolicy::clone() const {
 }
 
 const string ChangePlanPolicy::toString() const { 
-    return "Changing selection policy for plan number " + to_string(planId) + " to " + newPolicy;
+    return "changePolicy " + to_string(planId) + " " + newPolicy;
 }
 
 //----------------------------------------------------------------
 //PrintActionsLog Class
 //----------------------------------------------------------------
+
+PrintActionsLog::PrintActionsLog(): BaseAction() {}
+
+void PrintActionsLog::act(Simulation& simulation) {
+    for (int i = 0 ; i < simulation.Simulation::getActionsLog().size(); i++) 
+    {
+        string status;
+        if (simulation.Simulation::getActionsLog()[i]->getStatus() == ActionStatus::COMPLETED)
+        {
+            status = "COMPLETED";
+        }
+        else if (simulation.Simulation::getActionsLog()[i]->getStatus() == ActionStatus::ERROR)
+        {
+            status = "ERROR";
+        }
+        cout << simulation.Simulation::getActionsLog()[i]->toString() + " " + status << endl;
+    }
+    complete();
+}
+
+PrintActionsLog* PrintActionsLog::clone() const {
+    return new PrintActionsLog();
+}
+
+const string PrintActionsLog::toString() const {
+    return "log";
+}
+
+//----------------------------------------------------------------
+//Close Class
+//----------------------------------------------------------------
+
+Close::Close(): BaseAction() {}
+
+void Close::act(Simulation& simulation) {
+    vector<Plan> simPlans = simulation.Simulation::getPlans();
+    for (Plan& plan : simPlans)
+    {
+        cout << "PlanID: " << plan.Plan::getPlanId() << endl;
+        cout << "SettlementName: " << plan.Plan::getSettlementName() << endl;
+        cout << "LifeQuality_Score: " << plan.Plan::getlifeQualityScore() << endl;
+        cout << "Economy_Score: " << plan.Plan::getEconomyScore() << endl;
+        cout << "Environment_Score: " << plan.Plan::getEnvironmentScore() << endl;
+    }
+    simulation.Simulation::close();
+    complete();
+}
+
+Close* Close::clone() const {
+    return new Close();
+}
+
+const string Close::toString() const {
+    return "close";
+}
+
+//----------------------------------------------------------------
+//BackupSimulation Class
+//----------------------------------------------------------------
+
+BackupSimulation::BackupSimulation(): BaseAction() {}
+
+void BackupSimulation::act(Simulation &simulation) {
+    if (backup != nullptr)
+    {
+        delete backup;
+    }
+    backup = new Simulation(simulation);
+    complete();                                                                                 
+}
+
+BackupSimulation* BackupSimulation::clone() const {
+    return new BackupSimulation();
+}
+
+const string BackupSimulation::toString() const {
+    return "backup";
+}
+
+//----------------------------------------------------------------
+//RestoreSimulation Class
+//----------------------------------------------------------------
+
+RestoreSimulation::RestoreSimulation(): BaseAction() {}
+
+void RestoreSimulation::act(Simulation &simulation) {
+    if (backup == nullptr)
+    {
+        BaseAction::error("No backup available");
+        cout << "Error: " + BaseAction::getErrorMsg() << endl;
+        return;
+    }
+    simulation = *backup;
+    complete();
+}
+
+RestoreSimulation* RestoreSimulation::clone() const {
+    return new RestoreSimulation();
+}
+
+const string RestoreSimulation::toString() const {
+    return "restore";
+}

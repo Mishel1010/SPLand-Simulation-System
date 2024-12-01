@@ -5,6 +5,8 @@
 
 using namespace std; 
 
+Simulation* backup = nullptr;
+
 Simulation::Simulation(const string &configFilePath) : isRunning(true), planCounter(0) {
     std::ifstream configFile(configFilePath);
     if (!configFile.is_open())
@@ -56,7 +58,37 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
             }
             else 
             {
-                throw std::logic_error("Not implemented yet");
+                if (!Simulation::isSettlementExists(arguments[1]))
+                {
+                    cerr << "Error: Settlement does not exist" << endl;
+                    continue;
+                }
+                Settlement settlement = Simulation::getSettlement(arguments[1]);
+                if (arguments[2]=="nve")
+                {
+                    NaiveSelection* naiveSelection = new NaiveSelection();
+                    addPlan(settlement, naiveSelection);
+                }
+                else if (arguments[2]=="bal")
+                {
+                    BalancedSelection* balancedSelection = new BalancedSelection(0,0,0);
+                    addPlan(settlement, balancedSelection);
+                }
+                else if (arguments[2]=="eco")
+                {
+                    EconomySelection* economySelection = new EconomySelection();
+                    addPlan(settlement, economySelection);
+                }
+                else if (arguments[2]=="env")
+                {
+                    SustainabilitySelection* sustainabilitySelection = new SustainabilitySelection();
+                    addPlan(settlement, sustainabilitySelection);
+                }
+                else
+                {
+                    cerr << "Error: Invalid selection policy" << endl;
+                    continue;
+                }
             }
         }
     }
@@ -149,6 +181,14 @@ Plan &Simulation::getPlan(const int planID) {
         }
     }
     throw std::logic_error("Plan not found");
+}
+
+vector<BaseAction*>& Simulation::getActionsLog() {
+    return actionsLog;
+}
+
+vector<Plan>& Simulation::getPlans() {
+    return plans;
 }
 
 void Simulation::step() {
