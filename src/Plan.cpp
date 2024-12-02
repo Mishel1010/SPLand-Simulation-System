@@ -1,10 +1,8 @@
-#include "Action.h" 
 #include "Auxiliary.h"
 #include "Plan.h"
 #include "Settlement.h"
 #include "SelectionPolicy.h"
 #include "Facility.h"
-#include "Simulation.h"
 #include<iostream>
 using namespace std;
 
@@ -63,7 +61,7 @@ Plan& Plan::operator=(const Plan& other) {
         }
         
         status = other.status;
-        const_cast<std::vector<FacilityType>&>(facilityOptions) = other.facilityOptions;
+        const_cast<vector<FacilityType>&>(facilityOptions) = other.facilityOptions;
         life_quality_score = other.life_quality_score;
         economy_score = other.economy_score;
         environment_score = other.environment_score;
@@ -73,12 +71,12 @@ Plan& Plan::operator=(const Plan& other) {
 
 Plan::Plan(Plan&& other)
     : plan_id(other.plan_id),
-      settlement(std::move(other.settlement)),
-      selectionPolicy(std::move(other.selectionPolicy)),
+      settlement(move(other.settlement)),
+      selectionPolicy(move(other.selectionPolicy)),
       status(other.status),
-      facilities(std::move(other.facilities)),
-      underConstruction(std::move(other.underConstruction)),
-      facilityOptions(std::move(other.facilityOptions)),
+      facilities(move(other.facilities)),
+      underConstruction(move(other.underConstruction)),
+      facilityOptions(move(other.facilityOptions)),
       life_quality_score(other.life_quality_score),
       economy_score(other.economy_score),
       environment_score(other.environment_score) {
@@ -90,7 +88,7 @@ Plan& Plan::operator=(Plan&& other) noexcept {
     {
         plan_id = other.plan_id;
         const_cast<Settlement&>(settlement) = other.settlement;
-        const_cast<std::vector<FacilityType>&>(facilityOptions) = other.facilityOptions;
+        const_cast<vector<FacilityType>&>(facilityOptions) = other.facilityOptions;
         delete selectionPolicy;
         selectionPolicy = other.selectionPolicy;
         other.selectionPolicy = nullptr;
@@ -130,7 +128,7 @@ void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy) {
 void Plan::step(){
     while (status == PlanStatus::AVAILABLE)
     {
-        Facility* facil = new Facility(const_cast<FacilityType&>(selectionPolicy->SelectionPolicy::selectFacility(facilityOptions)), settlement.Settlement::getName());
+        Facility* facil = new Facility(const_cast<FacilityType&>(selectionPolicy->selectFacility(facilityOptions)), settlement.Settlement::getName());
         underConstruction.push_back(facil);
         if ((settlement.getType() == SettlementType::VILLAGE && underConstruction.size() == 1 ) ||
             (settlement.getType() == SettlementType::CITY && underConstruction.size() == 2) || 

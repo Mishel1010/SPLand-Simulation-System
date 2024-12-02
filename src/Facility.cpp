@@ -1,10 +1,8 @@
-#include "Action.h" 
 #include "Auxiliary.h"
 #include "Plan.h"
 #include "Settlement.h"
 #include "SelectionPolicy.h"
 #include "Facility.h"
-#include "Simulation.h"
 #include <string>
 #include <iostream>
 

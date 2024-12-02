@@ -1,15 +1,16 @@
-#include "Action.h" 
 #include "Auxiliary.h"
 #include "Plan.h"
 #include "Settlement.h"
 #include "SelectionPolicy.h"
 #include "Facility.h"
-#include "Simulation.h"
 #include <iostream>
-//naive selection class
+
+//----------------------------------------------------------------
+//NaiveSelection class
+//----------------------------------------------------------------
 NaiveSelection::NaiveSelection(): lastSelectedIndex(-1) {}
 
-const FacilityType& NaiveSelection::selectFacility(const std::vector<FacilityType>& facilitiesOptions) {
+const FacilityType& NaiveSelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
     lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();
     return facilitiesOptions[lastSelectedIndex];
 }
@@ -24,30 +25,36 @@ NaiveSelection* NaiveSelection::clone() const {
     return clone;
 }
 
-//balanced selction class
+//----------------------------------------------------------------
+//BalancedSelction Class
+//----------------------------------------------------------------
 BalancedSelection::BalancedSelection(int LifeQualityScore, int EconomyScore, int EnvironmentScore)
 : LifeQualityScore(LifeQualityScore), EconomyScore (EconomyScore), EnvironmentScore(EnvironmentScore){}
 
-const FacilityType& BalancedSelection::selectFacility(const std::vector<FacilityType>& facilitiesOptions){
+const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
     const FacilityType*  ptr = &facilitiesOptions[0];
     int a = ptr->getEconomyScore()+EconomyScore;
     int b = ptr->getLifeQualityScore()+LifeQualityScore;
     int c = ptr->getEnvironmentScore()+EnvironmentScore;
     int sum =std::abs(a-b) + std::abs(b-c) + std::abs(a-c) ;
 
-    for (const FacilityType& v:facilitiesOptions){
+    for (const FacilityType& v:facilitiesOptions)
+    {
         int a = LifeQualityScore + v.getLifeQualityScore();
         int b = v.getEconomyScore()+EconomyScore;
         int c = v.getEnvironmentScore()+EnvironmentScore;
         int temp = std::abs(a-b) + std::abs(b-c) + std::abs(a-c);
-        if (temp == 0){
+        if (temp == 0)
+        {
             return v;
         }
-        if (temp < sum){
-            ptr = &v;}}
-            return *ptr;
-
+        if (temp < sum)
+        {
+            ptr = &v;
+        }
     }
+    return *ptr;
+}
 
 const string BalancedSelection::toString() const {
     return "Balanced selection";
@@ -57,13 +64,17 @@ BalancedSelection* BalancedSelection::clone() const {
     return new BalancedSelection(LifeQualityScore, EconomyScore, EnvironmentScore);
 }
 
+
+//----------------------------------------------------------------
+//EconomySelection Class
+//----------------------------------------------------------------
 EconomySelection::EconomySelection() :lastSelectedIndex(-1){}
 
-const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
+const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
     lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();
     while (facilitiesOptions[lastSelectedIndex].getCategory() != FacilityCategory::ECONOMY)
     {
-      lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();  
+        lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();  
     }
     return facilitiesOptions[lastSelectedIndex];
 }
@@ -79,9 +90,12 @@ EconomySelection* EconomySelection::clone() const {
     return clone;
 }
 
+//----------------------------------------------------------------
+//SustainabilitySelection Class
+//----------------------------------------------------------------
 SustainabilitySelection::SustainabilitySelection(): lastSelectedIndex(-1){}
 
-const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
+const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
     lastSelectedIndex = (lastSelectedIndex+1)%facilitiesOptions.size();
     while (facilitiesOptions[lastSelectedIndex].getCategory() != FacilityCategory::ENVIRONMENT)
     {

@@ -1,9 +1,8 @@
 #include "Simulation.h"
 #include <iostream>
+#include <string>
 
 using namespace std;
-
-Simulation* backup = nullptr;
 
 int main(int argc, char** argv){
     if(argc!=2){
