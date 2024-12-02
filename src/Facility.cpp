@@ -8,6 +8,8 @@
 #include <string>
 #include <iostream>
 
+using namespace std;
+
 //--------------------------------------------------------------
 //FacilityType class
 //--------------------------------------------------------------
@@ -25,6 +27,47 @@ FacilityType::FacilityType(
       economy_score(economy_score),
       environment_score(environment_score){}
      
+FacilityType::FacilityType(const FacilityType &other)
+        : name(other.name),
+          category(other.category),
+          price(other.price),
+          lifeQuality_score(other.lifeQuality_score), 
+          economy_score(other.economy_score),
+          environment_score(other.environment_score) {}
+
+FacilityType& FacilityType::operator=(const FacilityType &other) {
+        if (this != &other) 
+        {
+            const_cast<string &>(name) = other.name; 
+            const_cast<FacilityCategory &>(category) = other.category;
+            const_cast<int &>(price) = other.price;
+            const_cast<int &>(lifeQuality_score) = other.lifeQuality_score;
+            const_cast<int &>(economy_score) = other.economy_score;
+            const_cast<int &>(environment_score) = other.environment_score;
+        }
+        return *this;
+}
+
+FacilityType::FacilityType(FacilityType &&other) noexcept
+        : name(move(other.name)), 
+          category(other.category), 
+          price(other.price),
+          lifeQuality_score(other.lifeQuality_score), 
+          economy_score(other.economy_score),
+          environment_score(other.environment_score) {}
+
+FacilityType& FacilityType::operator=(FacilityType &&other) noexcept {
+        if (this != &other) {
+            const_cast<string &>(name) = move(other.name); 
+            const_cast<FacilityCategory &>(category) = other.category;
+            const_cast<int &>(price) = other.price;
+            const_cast<int &>(lifeQuality_score) = other.lifeQuality_score;
+            const_cast<int &>(economy_score) = other.economy_score;
+            const_cast<int &>(environment_score) = other.environment_score;
+        }
+        return *this;
+    }
+
 const string &FacilityType::getName() const
 {
     return name;
@@ -78,6 +121,39 @@ Facility::Facility (const FacilityType &type, const string &settlementName):
     status(FacilityStatus::UNDER_CONSTRUCTIONS),
     timeLeft(type.getCost()) {}
 
+Facility::Facility(const Facility& other)
+    : FacilityType(other),
+      settlementName(other.settlementName),
+      status(other.status),
+      timeLeft(other.timeLeft) {}
+
+Facility& Facility::operator=(const Facility &other) {
+    if (this != &other) 
+    {
+        FacilityType::operator=(other); 
+        const_cast<string &>(settlementName) = other.settlementName; 
+        status = other.status;
+        timeLeft = other.timeLeft;
+    }
+    return *this;
+}
+Facility::Facility(Facility &&other) noexcept
+    : FacilityType(move(other)), 
+      settlementName(move(other.settlementName)),
+      status(other.status), 
+      timeLeft(other.timeLeft) {}
+
+Facility& Facility::operator=(Facility &&other) noexcept {
+    if (this != &other) 
+    {
+        FacilityType::operator=(move(other)); 
+        const_cast<string &>(settlementName) = move(other.settlementName); 
+        status = other.status;
+        timeLeft = other.timeLeft;
+    }
+    return *this;
+}
+
 const string &Facility::getSettlementName() const
 {
     return this->settlementName;
@@ -96,6 +172,7 @@ FacilityStatus Facility::step()
         status = FacilityStatus::OPERATIONAL;
     }
     timeLeft--;
+    return status;
 }
 
 

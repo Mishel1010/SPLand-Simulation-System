@@ -41,3 +41,7 @@ class Simulation {
         vector<FacilityType> facilitiesOptions;
 
 };
+
+extern Simulation* backup;
+
+

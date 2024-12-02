@@ -8,6 +8,8 @@ SOURCES = $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 EXECUTABLE = $(BINDIR)/SPLand_simulation
 
+CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic -Wno-ignored-qualifiers -I./include
+
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)

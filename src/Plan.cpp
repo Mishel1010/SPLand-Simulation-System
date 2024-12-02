@@ -18,15 +18,15 @@ Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *sele
     facilityOptions(facilityOptions),
     life_quality_score(0), economy_score(0), environment_score(0){}
 
-Plan::Plan(Plan& other)
+Plan::Plan(const Plan& other)
   : plan_id(other.getPlanId()),
     settlement(other.settlement),
-    life_quality_score(other.getlifeQualityScore()),
-    environment_score(other.getEnvironmentScore()),
-    economy_score(other.getEconomyScore()),
     selectionPolicy(other.selectionPolicy->clone()),
     status(other.status),
-    facilityOptions(other.facilityOptions) {
+    facilityOptions(other.facilityOptions),
+    life_quality_score(other.getlifeQualityScore()),
+    economy_score(other.getEconomyScore()),
+    environment_score(other.getEnvironmentScore()) {
         for(Facility* ptr : other.facilities)
         {
             facilities.push_back(ptr->clone());
@@ -35,6 +35,40 @@ Plan::Plan(Plan& other)
         {
             underConstruction.push_back(ptr->clone());
         } 
+}
+
+Plan& Plan::operator=(const Plan& other) {
+    if (this != &other)
+    {
+        plan_id = other.plan_id;
+        const_cast<Settlement&>(settlement) = settlement;
+        delete selectionPolicy;
+        selectionPolicy = other.selectionPolicy->clone();
+        for (Facility* facility : facilities)
+        {
+            delete facility;
+        }
+        facilities.clear();
+        for (const Facility* facility : other.facilities)
+        {
+            facilities.push_back(facility->clone());
+        }
+        
+        for (Facility* facility : underConstruction) {
+            delete facility;
+        }
+        underConstruction.clear();
+        for (const Facility* facility : other.underConstruction) {
+            underConstruction.push_back(facility->clone());
+        }
+        
+        status = other.status;
+        const_cast<std::vector<FacilityType>&>(facilityOptions) = other.facilityOptions;
+        life_quality_score = other.life_quality_score;
+        economy_score = other.economy_score;
+        environment_score = other.environment_score;
+    }
+    return *this;
 }
 
 Plan::Plan(Plan&& other)
@@ -47,7 +81,36 @@ Plan::Plan(Plan&& other)
       facilityOptions(std::move(other.facilityOptions)),
       life_quality_score(other.life_quality_score),
       economy_score(other.economy_score),
-      environment_score(other.environment_score){}
+      environment_score(other.environment_score) {
+        other.selectionPolicy = nullptr;
+      }
+
+Plan& Plan::operator=(Plan&& other) noexcept {
+    if (this != &other) 
+    {
+        plan_id = other.plan_id;
+        const_cast<Settlement&>(settlement) = other.settlement;
+        const_cast<std::vector<FacilityType>&>(facilityOptions) = other.facilityOptions;
+        delete selectionPolicy;
+        selectionPolicy = other.selectionPolicy;
+        other.selectionPolicy = nullptr;
+        for (Facility* facility : facilities)
+        {
+            delete facility;
+        }
+        facilities = std::move(other.facilities);
+        for (Facility* facility : underConstruction)
+        {
+            delete facility;
+        }
+        underConstruction = std::move(other.underConstruction);
+        status = other.status;
+        life_quality_score = other.life_quality_score;
+        economy_score = other.economy_score;
+        environment_score = other.environment_score;
+    }
+    return *this;
+}
 
 const int Plan::getlifeQualityScore() const {
     return life_quality_score;
@@ -76,7 +139,7 @@ void Plan::step(){
             status = PlanStatus::BUSY;
         }
     }
-    int i = 0;
+    size_t i = 0;
     while (i < underConstruction.size()) 
     {
         Facility* ptr = underConstruction[i];
@@ -111,7 +174,7 @@ const string Plan::getStatus() const {
     {
         return "Available";
     }
-    else if (status == PlanStatus::BUSY)
+    else 
     {
         return "Busy";
     }
@@ -128,6 +191,11 @@ const vector<Facility*>& Plan::getUnderConstructionFacilities() const {
 const string Plan::getSettlementName() const {
     return settlement.getName();
 }
+
+const SettlementType Plan::getSettlementType() const{
+    return settlement.getType();
+}
+
 
 const string Plan::getSelectionPolicyName() const {
     return selectionPolicy->toString();

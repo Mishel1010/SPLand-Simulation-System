@@ -8,7 +8,7 @@
 #include <iostream>
 using namespace std;
 
-Simulation* backup = nullptr;
+
 
 //----------------------------------------------------------------
 //BaseAction Class

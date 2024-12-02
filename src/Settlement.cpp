@@ -8,6 +8,17 @@
 
 Settlement::Settlement(const string &name, SettlementType type): name(name), type(type) {}
 
+Settlement::Settlement(const Settlement &other): name(other.name), type(other.type) {}
+
+Settlement &Settlement::operator=(const Settlement &other) {
+    if (this != &other) 
+    {
+        const_cast<string&>(name) = other.name; 
+        type = other.type;
+    }
+    return *this;
+}
+
 const string &Settlement::getName() const {
     return name;
 }
@@ -30,4 +41,5 @@ const string Settlement::toString() const {
     {
         ret += "is a metropolis";
     }
+    return ret;
 }

@@ -12,6 +12,8 @@
 
 using namespace std; 
 
+Simulation* backup = nullptr;
+
 Simulation::Simulation(const string &configFilePath) : isRunning(true), planCounter(0) {
     std::ifstream configFile(configFilePath);
     if (!configFile.is_open())
@@ -108,10 +110,10 @@ Simulation::Simulation(Simulation&& other)
     facilitiesOptions(std::move(other.facilitiesOptions)) {}
 
 Simulation::Simulation(Simulation& other)
-:   plans(other.plans),
-    facilitiesOptions(other.facilitiesOptions),
-    isRunning(other.isRunning),
-    planCounter(other.planCounter) {
+:   isRunning(other.isRunning),
+    planCounter(other.planCounter),
+    plans(other.plans),
+    facilitiesOptions(other.facilitiesOptions) {
         for (BaseAction* ptr : other.actionsLog)
         {
             this->actionsLog.push_back(ptr->clone());
@@ -163,8 +165,7 @@ Simulation& Simulation::operator=(Simulation&& other) {
         settlements.push_back(new Settlement(ptr->getName(), ptr->getType() ));
     }}
     return *this;
-    
-   }
+}
 
 void Simulation::start() {
     std::cout << "The simulation has started" << std::endl;
@@ -245,7 +246,7 @@ Settlement &Simulation::getSettlement(const string &settlementName) {
 }
 
 Plan &Simulation::getPlan(const int planID) {
-    for (Plan plan : plans)
+    for (Plan& plan : plans)
     {
         if (plan.getPlanId() == planID)
         {
@@ -270,7 +271,7 @@ void Simulation::step() {
 }
 
 void Simulation::close() {
-    for(int i=0; i<plans.size();i++)
+    for(size_t i=0; i<plans.size();i++)
     {
         cout << "plan ID: " + std::to_string(plans[i].getPlanId()) << endl; 
         cout << "settlementName " + plans[i].getSettlementName() << endl;
@@ -292,4 +293,6 @@ void Simulation::close() {
 void Simulation::open() {
     throw std::logic_error("Not implemented yet");
 }
+
+
 
