@@ -26,7 +26,7 @@ class Plan {
         const string getStatus() const;
         const vector<Facility*> &getFacilities() const;
         const vector<Facility*> &getUnderConstructionFacilities() const;
-        const string getSettlementName() const;
+        const string& getSettlementName() const;
         const SettlementType getSettlementType() const;
         const string getSelectionPolicyName() const;
         void addFacility(Facility* facility);

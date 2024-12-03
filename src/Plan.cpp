@@ -186,7 +186,7 @@ const vector<Facility*>& Plan::getUnderConstructionFacilities() const {
     return underConstruction;
 }
 
-const string Plan::getSettlementName() const {
+const string& Plan::getSettlementName() const {
     return settlement.getName();
 }
 

@@ -26,6 +26,7 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
         vector<string> arguments = Auxiliary::parseArguments(line);
         if(arguments.empty())
         {
+            cout << "Error: invalid configuration line" << endl;
             continue;
         }
         if (arguments[0]=="settlement")
@@ -39,6 +40,7 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
             {
                 Settlement* settlement = new Settlement(arguments[1], (SettlementType)stoi(arguments[2]));
                 addSettlement(settlement);
+                cout << "Settlement created: " << arguments[1] << ", Type: " << arguments[2] << endl;
             }
         }
         else if (arguments[0]=="facility")
@@ -52,6 +54,7 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
             {
                 FacilityType facility(arguments[1], (FacilityCategory)stoi(arguments[2]), stoi(arguments[3]), stoi(arguments[4]), stoi(arguments[5]), stoi(arguments[6]));
                 addFacility(facility);
+                cout << "Facility created: " << arguments[1] << ", Category: " << arguments[2] << ", Price: " << arguments[3] << ", Life Quality Score: " << arguments[4] << ", Economy Score: " << arguments[5] << ", Environment Score: " << arguments[6] << endl;
             }
         }
         else if (arguments[0]=="plan")
@@ -73,21 +76,25 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
                 {
                     NaiveSelection* naiveSelection = new NaiveSelection();
                     addPlan(settlement, naiveSelection);
+                    cout << "Plan created: " << arguments[1] << ", Type: " << arguments[2] << endl;
                 }
                 else if (arguments[2]=="bal")
                 {
                     BalancedSelection* balancedSelection = new BalancedSelection(0,0,0);
                     addPlan(settlement, balancedSelection);
+                    cout << "Plan created: " << arguments[1] << ", Type: " << arguments[2] << endl;
                 }
                 else if (arguments[2]=="eco")
                 {
                     EconomySelection* economySelection = new EconomySelection();
                     addPlan(settlement, economySelection);
+                    cout << "Plan created: " << arguments[1] << ", Type: " << arguments[2] << endl;
                 }
                 else if (arguments[2]=="env")
                 {
                     SustainabilitySelection* sustainabilitySelection = new SustainabilitySelection();
                     addPlan(settlement, sustainabilitySelection);
+                    cout << "Plan created: " << arguments[1] << ", Type: " << arguments[2] << endl;
                 }
                 else
                 {
@@ -174,11 +181,116 @@ void Simulation::start() {
         string command;
         getline(cin, command);
         istringstream iss(command);
-        string cmd;
-        iss >> cmd;
-        if (cmd == "step")
+        string action;
+        iss >> action;
+        cout << action << endl;
+        if (action == "step")
         {
-            
+            int numOfSteps;
+            iss >> numOfSteps;
+            const int steps = numOfSteps;
+            SimulateStep *simulateStep = new SimulateStep(steps);
+            simulateStep->act(*this);
+            addAction(simulateStep);
+        }
+        if (action == "plan")
+        {
+            string settlementname;
+            string selectionpolicy;
+            iss >> settlementname;
+            iss >> selectionpolicy;
+            AddPlan* addPlan = new AddPlan(settlementname, selectionpolicy);
+            addPlan->act(*this);
+            addAction(addPlan);
+        }
+        if (action == "settlement")
+        {
+            string setname;
+            int settype;
+            iss >> setname >> settype;
+            SettlementType a;
+            if (settype == 0)
+            {
+                a = SettlementType::VILLAGE; 
+            }
+            else if (settype==1)
+            {
+                a = SettlementType::CITY;
+            }
+            else 
+            {
+                a = SettlementType::METROPOLIS; 
+            }
+            AddSettlement* addSettlement = new AddSettlement(setname, a);
+            addSettlement->act(*this);
+            addAction(addSettlement); 
+        }
+        if (action == "facility")
+        {
+            string name;
+            int category;
+            int price;
+            int lifeq;
+            int eco;
+            int env;
+            iss >> name >> category >> price >> lifeq >> eco >> env;
+            FacilityCategory a;
+            if (category == 0)
+            {
+                a = FacilityCategory::LIFE_QUALITY;
+            }
+            if (category == 1)
+            {
+                a = FacilityCategory::ECONOMY;
+            }
+            else 
+            {
+                a = FacilityCategory::ENVIRONMENT;
+            }
+            AddFacility* current = new AddFacility(name, a, price, lifeq, eco, env);
+            current->act(*this);
+            addAction(current);
+        }
+        if (action == "planStatus")
+        {
+            int id;
+            iss >> id;
+            PrintPlanStatus* pps = new PrintPlanStatus(id);
+            pps->act(*this);
+            addAction(pps);
+        }
+        if (action == "changePolicy")
+        {
+            int id;
+            string policy;
+            iss >> id >> policy;
+            ChangePlanPolicy* cpp = new ChangePlanPolicy(id, policy);
+            cpp->act(*this);
+            addAction(cpp);
+        }
+        if (action == "log")
+        {
+            PrintActionsLog* pal = new PrintActionsLog();
+            pal->act(*this);
+            addAction(pal);
+        }
+        if (action == "close")
+        {
+            Close* close = new Close();
+            close->act(*this);
+            addAction(close);
+        }
+        if (action == "backup")
+        {
+            BackupSimulation* bs = new BackupSimulation();            g++ -g -o simulation main.cpp Simulation.cpp Auxiliary.cpp Plan.cpp Settlement.cpp
+            bs->act(*this);
+            addAction(bs);
+        }
+        if (action == "restore")
+        {
+            RestoreSimulation* rs = new RestoreSimulation();
+            rs->act(*this);
+            addAction(rs);
         }
     }
 }
@@ -276,8 +388,14 @@ vector<Plan>& Simulation::getPlans() {
 }
 
 void Simulation::step() {
-    for(Plan x: plans){
-        x.step();
+    if (plans.empty()) 
+    {
+        cout << "Warning: No plans to simulate." << endl;
+        return;
+    }
+    for(Plan& plan : plans)
+    {
+        plan.step();
     }
 }
 

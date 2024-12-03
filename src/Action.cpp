@@ -239,13 +239,19 @@ const string PrintPlanStatus::toString() const {
 ChangePlanPolicy::ChangePlanPolicy(const int planId, const string& newPolicy) : BaseAction(), planId(planId), newPolicy(newPolicy) {}
 
 void ChangePlanPolicy::act(Simulation& simulation) {
-    if (!(simulation.Simulation::isPlanExists(planId)) || !(simulation.Simulation::getPlan(planId).Plan::getSelectionPolicyName()==newPolicy))
+    if (!(simulation.Simulation::isPlanExists(planId)))
     {
         BaseAction::error("Cannot change selection policy");
         cout << "Error: " + BaseAction::getErrorMsg() << endl;
         return;
     }
     Plan &plan = simulation.Simulation::getPlan(planId);
+    if (plan.Plan::getSelectionPolicyName() == newPolicy)
+    {
+        BaseAction::error("Selection policy is already " + newPolicy);
+        cout << "Error: " + BaseAction::getErrorMsg() << endl;
+        return;
+    }
     SelectionPolicy* newPolicyObj;
     if (newPolicy == "nve")
     {
