@@ -12,8 +12,6 @@
 
 using namespace std; 
 
-Simulation* backup = nullptr;
-
 Simulation::Simulation(const string &configFilePath) : isRunning(true), planCounter(0) {
     std::ifstream configFile(configFilePath);
     if (!configFile.is_open())
@@ -30,7 +28,7 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
         {
             continue;
         }
-        if (arguments[0]=="Settlement")
+        if (arguments[0]=="settlement")
         {
             if (arguments.size() != 3)
             {
@@ -43,7 +41,7 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
                 addSettlement(settlement);
             }
         }
-        else if (arguments[0]=="Facility")
+        else if (arguments[0]=="facility")
         {
             if (arguments.size()!=7)
             {
@@ -56,7 +54,7 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
                 addFacility(facility);
             }
         }
-        else if (arguments[0]=="Plan")
+        else if (arguments[0]=="plan")
         {
             if (arguments.size()!=3)
             {
@@ -168,8 +166,21 @@ Simulation& Simulation::operator=(Simulation&& other) {
 }
 
 void Simulation::start() {
-    std::cout << "The simulation has started" << std::endl;
-    isRunning = true;  
+    cout << "The simulation has started" << std::endl;
+    open();
+    while (isRunning) 
+    {
+        cout << "Enter an action you'd like to perform: ";
+        string command;
+        getline(cin, command);
+        istringstream iss(command);
+        string cmd;
+        iss >> cmd;
+        if (cmd == "step")
+        {
+            
+        }
+    }
 }
 
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy) {
@@ -291,7 +302,7 @@ void Simulation::close() {
 }
 
 void Simulation::open() {
-    throw std::logic_error("Not implemented yet");
+    isRunning = true;
 }
 
 
