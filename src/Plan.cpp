@@ -129,9 +129,6 @@ void Plan::step(){
     while (status == PlanStatus::AVAILABLE)
     {
         Facility* facil = new Facility(const_cast<FacilityType&>(selectionPolicy->selectFacility(facilityOptions)), settlement.Settlement::getName());
-        life_quality_score += facil->getLifeQualityScore();
-        economy_score += facil->getEconomyScore();
-        environment_score += facil->getEnvironmentScore();
         underConstruction.push_back(facil);
         if ((settlement.getType() == SettlementType::VILLAGE && underConstruction.size() == 1 ) ||
             (settlement.getType() == SettlementType::CITY && underConstruction.size() == 2) || 
@@ -141,25 +138,22 @@ void Plan::step(){
         }
     }
     size_t i = 0;
-    for (size_t i=0 ; i<underConstruction.size() ; i++)
+    while (i < underConstruction.size()) 
     {
         Facility* ptr = underConstruction[i];
-        ptr->step();
-        if (ptr->getStatus() == FacilityStatus::OPERATIONAL)
+        if (ptr->step() == FacilityStatus::OPERATIONAL)
         {
             facilities.push_back(ptr);
             underConstruction.erase(underConstruction.begin()+i);
+            status = PlanStatus::AVAILABLE;
+            life_quality_score += ptr->getLifeQualityScore();
+            economy_score += ptr->getEconomyScore();
+            environment_score += ptr->getEnvironmentScore();
         }
-    }
-    if ((settlement.getType() == SettlementType::VILLAGE && underConstruction.size() == 1 ) ||
-        (settlement.getType() == SettlementType::CITY && underConstruction.size() == 2) || 
-        (settlement.getType() == SettlementType::METROPOLIS && underConstruction.size() == 3))
-    {
-        status = PlanStatus::BUSY;
-    }
-    else
-    {
-        status = PlanStatus::AVAILABLE;
+        else 
+        {
+            i++;
+        }
     }
 }
 void Plan::printStatus() {
