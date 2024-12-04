@@ -68,7 +68,7 @@ void AddPlan::act(Simulation& simulation) {
         cout << "Error: " + BaseAction::getErrorMsg() << endl;
         return;
     } 
-    const Settlement actSet = simulation.Simulation::getSettlement(settlementName);
+    const Settlement& actSet = simulation.Simulation::getSettlement(settlementName);
     if (selectionPolicy == "bal")
     {
         BalancedSelection* balancedSelection = new BalancedSelection(0,0,0);
