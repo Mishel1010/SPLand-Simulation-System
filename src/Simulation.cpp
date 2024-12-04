@@ -195,11 +195,9 @@ void Simulation::start() {
         }
         if (action == "plan")
         {
-            string settlementname;
-            string selectionpolicy;
-            iss >> settlementname;
-            iss >> selectionpolicy;
-            AddPlan* addPlan = new AddPlan(settlementname, selectionpolicy);
+            string settlementName, selectionPolicy;
+            iss >> settlementName >> selectionPolicy;
+            AddPlan* addPlan = new AddPlan(settlementName, selectionPolicy);
             addPlan->act(*this);
             addAction(addPlan);
         }
@@ -282,7 +280,7 @@ void Simulation::start() {
         }
         if (action == "backup")
         {
-            BackupSimulation* bs = new BackupSimulation();            g++ -g -o simulation main.cpp Simulation.cpp Auxiliary.cpp Plan.cpp Settlement.cpp
+            BackupSimulation* bs = new BackupSimulation();           
             bs->act(*this);
             addAction(bs);
         }
@@ -303,9 +301,9 @@ void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectio
     }
     const int currentPlanId = planCounter;
     planCounter++;
-    const vector<FacilityType> facilityOptions = facilitiesOptions;
-    Plan toAdd(currentPlanId,settlement, selectionPolicy,facilityOptions);
+    Plan toAdd(currentPlanId,settlement, selectionPolicy,facilitiesOptions);
     plans.push_back(toAdd);
+    cout << "Plan created: " << settlement.getName() << ", Type: " << selectionPolicy->toString() << endl;
 }
 
 void Simulation::addAction(BaseAction *action) {

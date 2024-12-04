@@ -3,7 +3,7 @@ PROJECT_NAME = SPLand_simulation
 
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic -Wno-ignored-qualifiers
+CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic -Wno-ignored-qualifiers -g 
 
 # Include directories
 INCLUDES = -I./include
