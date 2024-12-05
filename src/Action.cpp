@@ -344,6 +344,7 @@ const string Close::toString() const {
 BackupSimulation::BackupSimulation(): BaseAction() {}
 
 void BackupSimulation::act(Simulation &simulation) {
+    extern Simulation* backup;
     if (backup != nullptr)
     {
         delete backup;
@@ -367,6 +368,7 @@ const string BackupSimulation::toString() const {
 RestoreSimulation::RestoreSimulation(): BaseAction() {}
 
 void RestoreSimulation::act(Simulation &simulation) {
+    extern Simulation* backup;
     if (backup == nullptr)
     {
         BaseAction::error("No backup available");

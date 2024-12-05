@@ -71,29 +71,28 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
                     cerr << "Error: Settlement does not exist" << endl;
                     continue;
                 }
-                Settlement settlement = Simulation::getSettlement(arguments[1]);
                 if (arguments[2]=="nve")
                 {
                     NaiveSelection* naiveSelection = new NaiveSelection();
-                    addPlan(settlement, naiveSelection);
+                    addPlan(Simulation::getSettlement(arguments[1]), naiveSelection);
                     cout << "Plan created: " << arguments[1] << ", Type: " << arguments[2] << endl;
                 }
                 else if (arguments[2]=="bal")
                 {
                     BalancedSelection* balancedSelection = new BalancedSelection(0,0,0);
-                    addPlan(settlement, balancedSelection);
+                    addPlan(Simulation::getSettlement(arguments[1]), balancedSelection);
                     cout << "Plan created: " << arguments[1] << ", Type: " << arguments[2] << endl;
                 }
                 else if (arguments[2]=="eco")
                 {
                     EconomySelection* economySelection = new EconomySelection();
-                    addPlan(settlement, economySelection);
+                    addPlan(Simulation::getSettlement(arguments[1]), economySelection);
                     cout << "Plan created: " << arguments[1] << ", Type: " << arguments[2] << endl;
                 }
                 else if (arguments[2]=="env")
                 {
                     SustainabilitySelection* sustainabilitySelection = new SustainabilitySelection();
-                    addPlan(settlement, sustainabilitySelection);
+                    addPlan(Simulation::getSettlement(arguments[1]), sustainabilitySelection);
                     cout << "Plan created: " << arguments[1] << ", Type: " << arguments[2] << endl;
                 }
                 else
@@ -125,7 +124,7 @@ Simulation::Simulation(Simulation& other)
         }
         for(Settlement* q: other.settlements)
         {
-            this->settlements.push_back (new Settlement(q->getName(), q->getType()));
+            this->settlements.push_back(new Settlement(q->getName(), q->getType()));
         }
 }
 
@@ -151,24 +150,31 @@ Simulation& Simulation::operator=(Simulation&& other) {
 }
 
    Simulation& Simulation::operator=(Simulation& other){
-    if(this != &other){
-    plans = other.plans;
-    facilitiesOptions = other.facilitiesOptions;
-    isRunning = other.isRunning;
-    planCounter = other.planCounter;
-    for (BaseAction* ptr : actionsLog){
-        delete ptr;
+    if(this != &other)
+    {
+        plans = other.plans;
+        facilitiesOptions = other.facilitiesOptions;
+        isRunning = other.isRunning;
+        planCounter = other.planCounter;
+        for (BaseAction* ptr : actionsLog)
+        {
+            delete ptr;
+        }
+        actionsLog.clear();
+        for (BaseAction* ptr: other.actionsLog)
+        {
+            actionsLog.push_back(ptr->clone());
+        }
+        for(Settlement* ptr : settlements)
+        {
+            delete ptr;
+        }
+        settlements.clear();
+        for(Settlement* ptr : other.settlements)
+        {
+            settlements.push_back(new Settlement(ptr->getName(), ptr->getType() ));
+        }
     }
-    for (BaseAction* ptr: other.actionsLog){
-        actionsLog.push_back(ptr->clone());
-    }
-    for(Settlement* ptr : settlements){
-        delete ptr;
-    }
-
-    for(Settlement* ptr : other.settlements){
-        settlements.push_back(new Settlement(ptr->getName(), ptr->getType() ));
-    }}
     return *this;
 }
 
@@ -398,14 +404,6 @@ void Simulation::step() {
 }
 
 void Simulation::close() {
-    for(size_t i=0; i<plans.size();i++)
-    {
-        cout << "plan ID: " + std::to_string(plans[i].getPlanId()) << endl; 
-        cout << "settlementName " + plans[i].getSettlementName() << endl;
-        cout << "LifeQuality_score " + std::to_string(plans[i].getlifeQualityScore()) << endl;
-        cout << "Economy_Score " + std::to_string(plans[i].getEconomyScore()) << endl;
-        cout << "Environment score" + std::to_string(plans[i].getEnvironmentScore()) << endl;
-    }
     for (BaseAction* action : actionsLog)
     {
         delete action;

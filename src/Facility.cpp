@@ -83,7 +83,7 @@ int FacilityType::getLifeQualityScore() const
 
 int FacilityType::getEnvironmentScore() const
 {
-        return economy_score;
+        return environment_score;
 }
 
 int FacilityType::getEconomyScore() const

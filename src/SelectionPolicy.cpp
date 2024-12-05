@@ -5,6 +5,8 @@
 #include "Facility.h"
 #include <iostream>
 
+using namespace std;
+
 //----------------------------------------------------------------
 //NaiveSelection class
 //----------------------------------------------------------------
@@ -36,23 +38,22 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
     int a = ptr->getEconomyScore()+EconomyScore;
     int b = ptr->getLifeQualityScore()+LifeQualityScore;
     int c = ptr->getEnvironmentScore()+EnvironmentScore;
-    int sum =std::abs(a-b) + std::abs(b-c) + std::abs(a-c) ;
-
+    int diff = max(max(a,b),c) - min(min(a,b),c);
     for (const FacilityType& v:facilitiesOptions)
     {
         int a = LifeQualityScore + v.getLifeQualityScore();
         int b = v.getEconomyScore()+EconomyScore;
         int c = v.getEnvironmentScore()+EnvironmentScore;
-        int temp = std::abs(a-b) + std::abs(b-c) + std::abs(a-c);
-        if (temp == 0)
+        int newDiff = max(max(a,b),c) - min(min(a,b),c);
+        if (newDiff < diff)
         {
-            return v;
-        }
-        if (temp < sum)
-        {
+            diff = newDiff;
             ptr = &v;
         }
     }
+    LifeQualityScore += ptr->getLifeQualityScore();
+    EconomyScore += ptr->getEconomyScore();
+    EnvironmentScore += ptr->getEnvironmentScore();
     return *ptr;
 }
 
