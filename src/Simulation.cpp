@@ -108,10 +108,10 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
 Simulation::Simulation(Simulation&& other)
 :   isRunning(other.isRunning),
     planCounter(other.planCounter),
-    actionsLog(std::move(other.actionsLog)),
-    plans(std::move(other.plans)),
-    settlements(std::move(other.settlements)),
-    facilitiesOptions(std::move(other.facilitiesOptions)) {}
+    actionsLog(move(other.actionsLog)),
+    plans(move(other.plans)),
+    settlements(move(other.settlements)),
+    facilitiesOptions(move(other.facilitiesOptions)) {}
 
 Simulation::Simulation(Simulation& other)
 :   isRunning(other.isRunning),
@@ -124,7 +124,7 @@ Simulation::Simulation(Simulation& other)
         }
         for(Settlement* q: other.settlements)
         {
-            this->settlements.push_back(new Settlement(q->getName(), q->getType()));
+            this->settlements.push_back(new Settlement(*q));
         }
 }
 
@@ -150,30 +150,31 @@ Simulation& Simulation::operator=(Simulation&& other) {
 }
 
    Simulation& Simulation::operator=(Simulation& other){
-    if(this != &other)
-    {
-        plans = other.plans;
-        facilitiesOptions = other.facilitiesOptions;
-        isRunning = other.isRunning;
-        planCounter = other.planCounter;
+    if (this != &other) {
         for (BaseAction* ptr : actionsLog)
         {
             delete ptr;
         }
-        actionsLog.clear();
-        for (BaseAction* ptr: other.actionsLog)
-        {
-            actionsLog.push_back(ptr->clone());
-        }
-        for(Settlement* ptr : settlements)
+        for (Settlement* ptr : settlements)
         {
             delete ptr;
         }
+        actionsLog.clear();
+        plans.clear();
         settlements.clear();
-        for(Settlement* ptr : other.settlements)
+        facilitiesOptions.clear();
+        for (BaseAction* ptr : other.actionsLog)
         {
-            settlements.push_back(new Settlement(ptr->getName(), ptr->getType() ));
+            actionsLog.push_back(ptr->clone());
         }
+        for(Settlement* q: other.settlements)
+        {
+            settlements.push_back(new Settlement(*q));
+        }
+        plans = other.plans;
+        facilitiesOptions = other.facilitiesOptions;
+        isRunning = other.isRunning;
+        planCounter = other.planCounter;
     }
     return *this;
 }

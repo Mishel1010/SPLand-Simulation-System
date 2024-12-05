@@ -39,7 +39,7 @@ Plan& Plan::operator=(const Plan& other) {
     if (this != &other)
     {
         plan_id = other.plan_id;
-        const_cast<Settlement&>(settlement) = settlement;
+        const_cast<Settlement&>(settlement) = other.settlement;
         delete selectionPolicy;
         selectionPolicy = other.selectionPolicy->clone();
         for (Facility* facility : facilities)
