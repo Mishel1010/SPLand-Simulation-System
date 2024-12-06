@@ -40,7 +40,6 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
             {
                 Settlement* settlement = new Settlement(arguments[1], (SettlementType)stoi(arguments[2]));
                 addSettlement(settlement);
-                cout << "Settlement created: " << arguments[1] << ", Type: " << arguments[2] << endl;
             }
         }
         else if (arguments[0]=="facility")
@@ -54,7 +53,6 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
             {
                 FacilityType facility(arguments[1], (FacilityCategory)stoi(arguments[2]), stoi(arguments[3]), stoi(arguments[4]), stoi(arguments[5]), stoi(arguments[6]));
                 addFacility(facility);
-                cout << "Facility created: " << arguments[1] << ", Category: " << arguments[2] << ", Price: " << arguments[3] << ", Life Quality Score: " << arguments[4] << ", Economy Score: " << arguments[5] << ", Environment Score: " << arguments[6] << endl;
             }
         }
         else if (arguments[0]=="plan")
@@ -75,25 +73,21 @@ Simulation::Simulation(const string &configFilePath) : isRunning(true), planCoun
                 {
                     NaiveSelection* naiveSelection = new NaiveSelection();
                     addPlan(Simulation::getSettlement(arguments[1]), naiveSelection);
-                    cout << "Plan created: " << arguments[1] << ", Type: " << arguments[2] << endl;
                 }
                 else if (arguments[2]=="bal")
                 {
                     BalancedSelection* balancedSelection = new BalancedSelection(0,0,0);
                     addPlan(Simulation::getSettlement(arguments[1]), balancedSelection);
-                    cout << "Plan created: " << arguments[1] << ", Type: " << arguments[2] << endl;
                 }
                 else if (arguments[2]=="eco")
                 {
                     EconomySelection* economySelection = new EconomySelection();
                     addPlan(Simulation::getSettlement(arguments[1]), economySelection);
-                    cout << "Plan created: " << arguments[1] << ", Type: " << arguments[2] << endl;
                 }
                 else if (arguments[2]=="env")
                 {
                     SustainabilitySelection* sustainabilitySelection = new SustainabilitySelection();
                     addPlan(Simulation::getSettlement(arguments[1]), sustainabilitySelection);
-                    cout << "Plan created: " << arguments[1] << ", Type: " << arguments[2] << endl;
                 }
                 else
                 {
@@ -116,8 +110,7 @@ Simulation::Simulation(Simulation&& other)
 Simulation::Simulation(Simulation& other)
 :   isRunning(other.isRunning),
     planCounter(other.planCounter),
-    plans(other.plans),
-    facilitiesOptions(other.facilitiesOptions) {
+    facilitiesOptions(other.facilitiesOptions) {    
         for (BaseAction* ptr : other.actionsLog)
         {
             this->actionsLog.push_back(ptr->clone());
@@ -125,6 +118,10 @@ Simulation::Simulation(Simulation& other)
         for(Settlement* q: other.settlements)
         {
             this->settlements.push_back(new Settlement(*q));
+        }
+        for(Plan p: other.plans)
+        {
+            plans.push_back(Plan(p, findSettlement(p.getSettlementName())));
         }
 }
 
@@ -150,7 +147,8 @@ Simulation& Simulation::operator=(Simulation&& other) {
 }
 
    Simulation& Simulation::operator=(Simulation& other){
-    if (this != &other) {
+    if (this != &other) 
+    {
         for (BaseAction* ptr : actionsLog)
         {
             delete ptr;
@@ -171,7 +169,10 @@ Simulation& Simulation::operator=(Simulation&& other) {
         {
             settlements.push_back(new Settlement(*q));
         }
-        plans = other.plans;
+        for (Plan p : other.plans)
+        {
+            plans.push_back(Plan(p,findSettlement(p.getSettlementName())));
+        }
         facilitiesOptions = other.facilitiesOptions;
         isRunning = other.isRunning;
         planCounter = other.planCounter;
@@ -190,7 +191,6 @@ void Simulation::start() {
         istringstream iss(command);
         string action;
         iss >> action;
-        cout << action << endl;
         if (action == "step")
         {
             int numOfSteps;
@@ -310,7 +310,6 @@ void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectio
     planCounter++;
     Plan toAdd(currentPlanId,settlement, selectionPolicy,facilitiesOptions);
     plans.push_back(toAdd);
-    cout << "Plan created: " << settlement.getName() << ", Type: " << selectionPolicy->toString() << endl;
 }
 
 void Simulation::addAction(BaseAction *action) {
@@ -348,6 +347,7 @@ bool Simulation::isSettlementExists(const string &settlementName) {
     }
     return false;
 }
+
 
 bool Simulation::isPlanExists(const int planID) {
     for (Plan plan : plans)
@@ -392,7 +392,7 @@ vector<Plan>& Simulation::getPlans() {
     return plans;
 }
 
-void Simulation::step() {
+ void Simulation::step() {
     if (plans.empty()) 
     {
         cout << "Warning: No plans to simulate." << endl;
@@ -402,6 +402,17 @@ void Simulation::step() {
     {
         plan.step();
     }
+}
+
+Settlement* Simulation::findSettlement(const string st){
+    for (Settlement* b : settlements) 
+    {
+        if (b->getName() == st)
+        {
+            return b;
+        }
+    }
+    return nullptr;
 }
 
 void Simulation::close() {

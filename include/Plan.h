@@ -14,6 +14,7 @@ class Plan {
     public:
         Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions);
         Plan(const Plan& other);
+        Plan(const Plan& other, Settlement* set);
         Plan& operator=(const Plan& other);
         Plan(Plan&& other);
         Plan& operator=(Plan&& other) noexcept;

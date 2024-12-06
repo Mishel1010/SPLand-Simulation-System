@@ -35,6 +35,26 @@ Plan::Plan(const Plan& other)
         } 
 }
 
+
+Plan::Plan(const Plan& other, Settlement* set)
+: plan_id(other.getPlanId()),
+    settlement(*set),
+    selectionPolicy(other.selectionPolicy->clone()),
+    status(other.status),
+    facilityOptions(other.facilityOptions),
+    life_quality_score(other.getlifeQualityScore()),
+    economy_score(other.getEconomyScore()),
+    environment_score(other.getEnvironmentScore()) {
+        for(Facility* ptr : other.facilities)
+        {
+            facilities.push_back(ptr->clone());
+        }
+        for(Facility* ptr : other.underConstruction)
+        {
+            underConstruction.push_back(ptr->clone());
+        } 
+}
+
 Plan& Plan::operator=(const Plan& other) {
     if (this != &other)
     {
@@ -50,9 +70,9 @@ Plan& Plan::operator=(const Plan& other) {
         for (const Facility* facility : other.facilities)
         {
             facilities.push_back(facility->clone());
-        }
-        
-        for (Facility* facility : underConstruction) {
+        }   
+        for (Facility* facility : underConstruction) 
+        {
             delete facility;
         }
         underConstruction.clear();
