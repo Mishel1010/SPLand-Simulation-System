@@ -17,6 +17,7 @@ class Simulation {
         Simulation(Simulation& other);
         Simulation& operator=(Simulation&& other);
         Simulation& operator=(Simulation& other);
+        virtual ~Simulation();
         void start();
         void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy);
         void addAction(BaseAction *action);

@@ -253,4 +253,5 @@ Plan::~Plan() {
         delete facil;
     }
     underConstruction.clear();
+    delete selectionPolicy;
 }

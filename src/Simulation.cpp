@@ -180,6 +180,17 @@ Simulation& Simulation::operator=(Simulation&& other) {
     return *this;
 }
 
+Simulation::~Simulation(){
+    for (BaseAction* ptr : actionsLog)
+    {
+        delete ptr;
+    }
+    for (Settlement* ptr : settlements)
+    {
+        delete ptr;
+    }
+}
+
 void Simulation::start() {
     cout << "The simulation has started" << std::endl;
     open();
@@ -416,14 +427,6 @@ Settlement* Simulation::findSettlement(const string st){
 }
 
 void Simulation::close() {
-    for (BaseAction* action : actionsLog)
-    {
-        delete action;
-    }
-    for (Settlement* settlement : settlements)
-    {
-        delete settlement;
-    }
     isRunning = false;
 }
 
